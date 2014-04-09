@@ -140,6 +140,9 @@ const tvh_caps_t tvheadend_capabilities[] = {
 #if ENABLE_LINUXDVB
   { "linuxdvb", NULL },
 #endif
+#if ENABLE_SATIP_CLIENT
+  { "satip_client", NULL },
+#endif
 #if ENABLE_LIBAV
   { "transcoding", &transcoding_enabled },
 #endif
@@ -774,6 +777,9 @@ main(int argc, char **argv)
 #if ENABLE_LINUXDVB
   linuxdvb_init(adapter_mask);
 #endif
+#if ENABLE_SATIP_CLIENT
+  satip_init();
+#endif
 
   channel_init();
 
@@ -852,6 +858,9 @@ main(int argc, char **argv)
 #endif
 #if ENABLE_LINUXDVB
   tvhftrace("main", linuxdvb_done);
+#endif
+#if ENABLE_SATIP_CLIENT
+  tvhftrace("main", satip_done);
 #endif
 #if ENABLE_TSFILE
   tvhftrace("main", tsfile_done);
