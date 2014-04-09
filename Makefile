@@ -116,6 +116,9 @@ SRCS =  src/version.c \
 	src/http/http_client.c \
 	src/fsmonitor.c \
 
+SRCS-${CONFIG_UPNP} += \
+	src/upnp.c
+
 SRCS += \
 	src/api.c \
 	src/api/api_status.c \
