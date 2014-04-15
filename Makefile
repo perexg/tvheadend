@@ -114,6 +114,7 @@ SRCS =  src/version.c \
 	src/service_mapper.c \
 	src/input.c \
 	src/httpc.c \
+	src/rtsp.c \
 	src/fsmonitor.c \
 
 SRCS-${CONFIG_UPNP} += \
