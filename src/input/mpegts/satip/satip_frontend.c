@@ -874,6 +874,7 @@ satip_frontend_input_thread ( void *aux )
   int changing = 0, ms = -1, fatal = 0;
   uint32_t seq = -1, nseq;
   udp_multirecv_t um;
+  int play2 = 1, play2step2 = 0;
 
   lfe->mi_display_name((mpegts_input_t*)lfe, buf, sizeof(buf));
 
@@ -980,6 +981,12 @@ satip_frontend_input_thread ( void *aux )
             satip_frontend_pid_changed(rtsp, lfe, buf);
           }
           break;
+        case RTSP_CMD_PLAY:
+          if (rtsp->hc_code == 200 && play2step2) {
+            satip_frontend_pid_changed(rtsp, lfe, buf);
+            play2step2 = 0;
+          }
+          /* fall thru */
         default:
           if (rtsp->hc_code >= 400) {
             tvhlog(LOG_ERR, "satip", "%s - RTSP cmd error %d (%s) [%i-%i]",
@@ -990,6 +997,20 @@ satip_frontend_input_thread ( void *aux )
         }
         rtsp->hc_cmd = HTTP_CMD_NONE;
       }
+    }
+
+    if (play2 && rtsp->hc_ping_time + 1 < dispatch_clock) {
+      pos = lfe->sf_position;
+      if (lfe->sf_master) {
+        lfe2 = satip_frontend_find_by_number(lfe->sf_device, lfe->sf_master);
+        if (lfe2)
+          pos = lfe2->sf_position;
+      }
+      satip_rtsp_setup(rtsp, pos, lfe->sf_number, lfe->sf_rtp_port,
+                       &lm->lm_tuning, lfe->sf_device->sd_pids0 | 0x80);
+      play2step2 = 1;
+      play2 = 0;
+      lfe->sf_pids_tcount = 0;
     }
 
     /* We need to keep the session alive */

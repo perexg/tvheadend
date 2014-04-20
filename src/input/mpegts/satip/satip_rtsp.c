@@ -208,6 +208,8 @@ satip_rtsp_setup( http_client_t *hc, int src, int fe,
   if (hc->hc_rtsp_stream_id >= 0)
     snprintf(stream = _stream, sizeof(_stream), "/stream=%li",
              hc->hc_rtsp_stream_id);
+  if (pids0 & 0x80)
+    return rtsp_play(hc, stream, buf);
   return rtsp_setup(hc, stream, buf, NULL, udp_port, udp_port + 1);
 }
 
