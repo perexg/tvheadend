@@ -1605,8 +1605,10 @@ cwc_table_input(void *opaque, int pid, const uint8_t *data, int len)
   if (data == NULL)
     return;
 
-  if (ct->td_keystate == DS_IDLE)
+  if (ct->td_keystate == DS_IDLE) {
+    tvhlog(LOG_DEBUG, "cwc", "table input - keystate in idle - ignore");
     return;
+  }
 
   if(len > 4096)
     return;
@@ -1655,8 +1657,10 @@ cwc_table_input(void *opaque, int pid, const uint8_t *data, int len)
   }
   pthread_mutex_unlock(&t->s_stream_mutex);
 
-  if(ep == NULL)
+  if(ep == NULL) {
+    tvhlog(LOG_DEBUG, "cwc", "table input - ep NULL - ignore");
     return;
+  }
 
   struct cs_card_data *pcard = NULL;
   int i_break = 0;
@@ -1670,8 +1674,10 @@ cwc_table_input(void *opaque, int pid, const uint8_t *data, int len)
     if (i_break == 1) break;
   }
 
-  if(c == NULL)
+  if(c == NULL) {
+    tvhlog(LOG_DEBUG, "cwc", "table input - c NULL - ignore");
     return;
+  }
 
   switch(data[0]) {
     case 0x80:
