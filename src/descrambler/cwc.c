@@ -1623,6 +1623,7 @@ cwc_table_input(void *opaque, int pid, const uint8_t *data, int len)
 
   pthread_mutex_lock(&t->s_stream_mutex);
   if(ep == NULL) {
+    tvhlog(LOG_DEBUG, "cwc", "ECM state %i", ct->ecm_state);
     if (ct->ecm_state == ECM_RESET) {
       ct->ecm_state = ECM_INIT;
       ct->cs_channel = -1;
@@ -1641,6 +1642,7 @@ cwc_table_input(void *opaque, int pid, const uint8_t *data, int len)
         }
       }
 
+      tvhlog(LOG_DEBUG, "cwc", "prefcapid = %i (%i)", t->s_dvb_prefcapid, pid);
       if(t->s_dvb_prefcapid == pid) {
         ep = calloc(1, sizeof(ecm_pid_t));
         ep->ep_pid = t->s_dvb_prefcapid;
