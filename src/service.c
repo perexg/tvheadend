@@ -1822,7 +1822,7 @@ void service_load ( service_t *t, htsmsg_t *c )
 	        st->es_parent_pid = u32;
       }
 
-      if(SCT_ISVIDEO(type)) {
+      if(SCT_ISVIDEO(type) && 0) {
         if(!htsmsg_get_u32(c, "width", &u32))
 	        st->es_width = u32;
 
