@@ -389,11 +389,13 @@ mpegts_input_close_pid
     tvhdebug("mpegts", "%s - close PID %04X (%d) [%d/%p]",
              buf, mp->mp_pid, mp->mp_pid, type, owner);
     RB_REMOVE(&mp->mp_subs, mps, mps_link);
+    memset(mps, 0xa5, sizeof(*mps));
     free(mps);
     if (!RB_FIRST(&mp->mp_subs)) {
       RB_REMOVE(&mm->mm_pids, mp, mp_link);
       if (mp->mp_fd != -1)
         close(mp->mp_fd);
+      memset(mp, 0xa6, sizeof(*mp));
       free(mp);
     }
   }
