@@ -332,6 +332,18 @@ mps_cmp ( mpegts_pid_sub_t *a, mpegts_pid_sub_t *b )
   return 0;
 }
 
+
+static void dump_pids( mpegts_mux_t *mm, const char *where )
+{
+  mpegts_pid_t *mp;
+  mpegts_pid_sub_t *mps;
+  int i = 0;
+  RB_FOREACH(mp, &mm->mm_pids, mp_link)
+    RB_FOREACH(mps, &mp->mp_subs, mps_link)
+      tvhtrace("mpegts", "dump pids {%s} %i: mux %p PID %04X (%d) [%d/%p]",
+               where, i++, mm, mp->mp_pid, mp->mp_pid, mps->mps_type, mps->mps_owner);
+}
+
 mpegts_pid_t *
 mpegts_input_open_pid
   ( mpegts_input_t *mi, mpegts_mux_t *mm, int pid, int type, void *owner )
@@ -385,6 +397,8 @@ mpegts_input_close_pid
       free(mp);
     }
   }
+  dump_pids(mm, "close");
+  mm->mm_last_pid = -2;
 }
 
 void
@@ -750,6 +764,11 @@ mpegts_input_process
   assert(mm == mmi->mmi_mux);
 
   mi->mi_live = 1;
+
+  if (mm->mm_last_pid == -2) {
+    dump_pids(mm, "input");
+    mm->mm_last_pid = -1;
+  }
 
   /* Process */
   assert((len % 188) == 0);
