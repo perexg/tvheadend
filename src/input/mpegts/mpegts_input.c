@@ -767,10 +767,10 @@ mpegts_input_process
 
   mi->mi_live = 1;
 
-  if (mm->mm_last_pid == -2) {
+  //if (mm->mm_last_pid == -2) {
     dump_pids(mm, "input");
     mm->mm_last_pid = -1;
-  }
+  //}
 
   /* Process */
   assert((len % 188) == 0);
