@@ -804,6 +804,8 @@ linuxdvb_frontend_monitor ( void *aux )
   }
 }
 
+#define LINUXDVB_INPUT_BUFFER 18800
+
 static void *
 linuxdvb_frontend_input_thread ( void *aux )
 {
@@ -844,7 +846,19 @@ linuxdvb_frontend_input_thread ( void *aux )
   tvhpoll_add(efd, ev, 2);
 
   /* Allocate memory */
-  sbuf_init_fixed(&sb, 18800);
+  sbuf_init_fixed(&sb, LINUXDVB_INPUT_BUFFER);
+
+  /* Flush FD */
+  while ((n = sbuf_read(&sb, dvr)) < 0) {
+    if (errno == EAGAIN)
+      break;
+    if (ERRNO_AGAIN(errno))
+      continue;
+    tvhtrace("linuxdvb", "%s - flushed %zu bytes", buf, n);
+    if (n >= sb.sb_size)
+      break;
+  }
+  sbuf_reset(&sb, LINUXDVB_INPUT_BUFFER);
 
   /* Read */
   while (tvheadend_running) {
