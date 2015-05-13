@@ -1503,6 +1503,9 @@ cwc_emm_viaccess(cwc_t *cwc, struct cs_card_data *pcard, const uint8_t *data, in
   /* Get SCT len */
   int len = 3 + ((data[1] & 0x0f) << 8) + data[2];
 
+  tvhtrace("cwc", "viaccess EMM dump %d %d", len, mlen);
+  tvhlog_hexdump("cwc", data, MIN(len, mlen));
+
   switch (data[0])
     {
     case 0x8c:
@@ -1514,6 +1517,7 @@ cwc_emm_viaccess(cwc_t *cwc, struct cs_card_data *pcard, const uint8_t *data, in
       
       /* Match provider id */
       id = via_provider_id(data);
+      tvhtrace("cwc", "provider id: 0x%x", id);
       if (!id) break;
       
       for(i = 0; i < pcard->cwc_num_providers; i++)
@@ -1522,8 +1526,10 @@ cwc_emm_viaccess(cwc_t *cwc, struct cs_card_data *pcard, const uint8_t *data, in
           break;
         }
       if (!match) break;
+      tvhtrace("cwc", "match ok");
 
       if (data[0] != cwc->cwc_viaccess_emm.shared_toggle) {
+        tvhtrace("cwc", "toggle ok");
         cwc->cwc_viaccess_emm.shared_len = 0;
         free(cwc->cwc_viaccess_emm.shared_emm);
         cwc->cwc_viaccess_emm.shared_emm = (uint8_t*)malloc(len);
@@ -1542,7 +1548,12 @@ cwc_emm_viaccess(cwc_t *cwc, struct cs_card_data *pcard, const uint8_t *data, in
         int match = 0;
         int i;
         /* Match SA and provider in shared */
+        tvhtrace("cwc", "SA match");
         for(i = 0; i < pcard->cwc_num_providers; i++) {
+          uint8_t buf[6];
+          memcpy(buf, data + 3, 3);
+          memcpy(buf + 3, pcard->cwc_providers[i].sa + 4, 3);
+          tvhlog_hexdump("cwc", buf, 6);
           if(memcmp(&data[3],&pcard->cwc_providers[i].sa[4], 3)) continue;
           if((data[6]&2)) continue;
           if(via_provider_id(cwc->cwc_viaccess_emm.shared_emm) != pcard->cwc_providers[i].id) continue;
@@ -1550,6 +1561,8 @@ cwc_emm_viaccess(cwc_t *cwc, struct cs_card_data *pcard, const uint8_t *data, in
             break;
         }
         if (!match) break;
+
+        tvhtrace("cwc", "match ok 2");
 
         uint8_t * tmp = alloca(len + cwc->cwc_viaccess_emm.shared_len);
         const uint8_t * ass = nano_start(data);
@@ -1574,6 +1587,7 @@ cwc_emm_viaccess(cwc_t *cwc, struct cs_card_data *pcard, const uint8_t *data, in
         if(ass2) {
           uint32_t crc;
 
+          tvhtrace("cwc", "ass2 ok 2");
           memcpy(ass2, data, 7);
           if (sort_nanos(ass2 + 7, tmp, len))
             return;
