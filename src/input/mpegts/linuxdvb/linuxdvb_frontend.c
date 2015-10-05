@@ -1646,6 +1646,14 @@ linuxdvb_frontend_create
   linuxdvb_frontend_t *lfe;
   htsmsg_t *scconf = NULL;
 
+  /* Tuner slave */
+  snprintf(id, sizeof(id), "master for #%d", number);
+  if (conf && type == DVB_TYPE_S) {
+    muuid = htsmsg_get_str(conf, id);
+    if (muuid && uuid && !strcmp(muuid, uuid))
+      muuid = NULL;
+  }
+
   /* Internal config ID */
   snprintf(id, sizeof(id), "%s #%d", dvb_type2str(type), number);
   if (conf)
@@ -1661,14 +1669,6 @@ linuxdvb_frontend_create
       htsmsg_add_str(l, NULL, str);
       htsmsg_add_msg(conf, "networks", l);
     }
-  }
-
-  /* Tuner slave */
-  snprintf(lname, sizeof(lname), "master for #%d", number);
-  if (conf && type == DVB_TYPE_S) {
-    muuid = htsmsg_get_str(conf, lname);
-    if (muuid && uuid && !strcmp(muuid, uuid))
-      muuid = NULL;
   }
 
   /* Class */
