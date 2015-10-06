@@ -461,7 +461,10 @@ int linuxdvb_satconf_get_priority
 
 int linuxdvb_satconf_get_grace
   ( linuxdvb_satconf_t *ls, mpegts_mux_t *mm );
-  
+
+int linuxdvb_satconf_lnb_freq
+  ( linuxdvb_satconf_t *ls, mpegts_mux_instance_t *mmi );
+
 void linuxdvb_satconf_post_stop_mux( linuxdvb_satconf_t *ls );
 
 int linuxdvb_satconf_start_mux

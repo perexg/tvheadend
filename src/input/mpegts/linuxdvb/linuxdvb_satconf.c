@@ -824,11 +824,16 @@ linuxdvb_satconf_ele_tune_cb ( void *o )
   // TODO: how to signal error
 }
 
-static int
+int
 linuxdvb_satconf_lnb_freq
-  ( linuxdvb_satconf_ele_t *lse, dvb_mux_t *lm )
+  ( linuxdvb_satconf_t *ls, mpegts_mux_instance_t *mmi )
 {
   int f;
+  linuxdvb_satconf_ele_t *lse = linuxdvb_satconf_find_ele(ls, mmi->mmi_mux);
+  dvb_mux_t              *lm  = (dvb_mux_t*)mmi->mmi_mux;
+
+  if (!lse->lse_lnb)
+    return -1;
 
   f = lse->lse_lnb->lnb_freq(lse->lse_lnb, lm);
   if (f == (uint32_t)-1)
@@ -853,7 +858,6 @@ linuxdvb_satconf_start_mux
   uint32_t f;
   linuxdvb_satconf_ele_t *lse = linuxdvb_satconf_find_ele(ls, mmi->mmi_mux);
   linuxdvb_frontend_t    *lfe = (linuxdvb_frontend_t*)ls->ls_frontend;
-  dvb_mux_t              *lm  = (dvb_mux_t*)mmi->mmi_mux;
 
   /* Not fully configured */
   if (!lse) return SM_CODE_TUNING_FAILED;
@@ -867,13 +871,13 @@ linuxdvb_satconf_start_mux
     return SM_CODE_TUNING_FAILED;
 
   if (skip_diseqc) {
-    f = linuxdvb_satconf_lnb_freq(lse, lm);
+    f = linuxdvb_satconf_lnb_freq(ls, mmi);
     if (f < 0)
       return SM_CODE_TUNING_FAILED;
     return linuxdvb_frontend_tune1(lfe, mmi, f);
   }
   if (ls->ls_early_tune) {
-    f = linuxdvb_satconf_lnb_freq(lse, lm);
+    f = linuxdvb_satconf_lnb_freq(ls, mmi);
     if (f < 0)
       return SM_CODE_TUNING_FAILED;
     r = linuxdvb_frontend_tune0(lfe, mmi, f);

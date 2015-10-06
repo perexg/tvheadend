@@ -457,7 +457,7 @@ linuxdvb_frontend_start_mux
   ( mpegts_input_t *mi, mpegts_mux_instance_t *mmi )
 {
   linuxdvb_frontend_t *lfe = (linuxdvb_frontend_t*)mi, *lfe2;
-  int res;
+  int res, f;
 
   assert(lfe->lfe_in_setup == 0);
 
@@ -476,7 +476,13 @@ linuxdvb_frontend_start_mux
         lfe2->lfe_ioctls   = 0;
         res = linuxdvb_satconf_start_mux(lfe2->lfe_satconf, mmi, 0);
         if (res)
-          goto fail;
+          goto end;
+        f = linuxdvb_satconf_lnb_freq(lfe2->lfe_satconf, mmi);
+        if (f > 0)
+          res = linuxdvb_frontend_tune1((linuxdvb_frontend_t*)mi, mmi, -1);
+        else
+          res = SM_CODE_TUNING_FAILED;
+        goto end;
       }
     }
   }
@@ -486,7 +492,7 @@ linuxdvb_frontend_start_mux
   else
     res = linuxdvb_frontend_tune1((linuxdvb_frontend_t*)mi, mmi, -1);
 
-fail:
+end:
   if (res) {
     lfe->lfe_in_setup = 0;
     lfe->lfe_refcount--;
