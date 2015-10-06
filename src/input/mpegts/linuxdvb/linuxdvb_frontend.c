@@ -1759,6 +1759,7 @@ linuxdvb_frontend_create
   /* Double check enabled */
   linuxdvb_frontend_enabled_updated((mpegts_input_t*)lfe);
 
+  tvhtrace("linuxdvb", "lfe create: satconf %p/%p", lfe, lfe->lfe_satconf);
   return lfe;
 }
 
