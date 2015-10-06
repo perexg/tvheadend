@@ -369,7 +369,7 @@ linuxdvb_frontend_is_enabled ( mpegts_input_t *mi, mpegts_mux_t *mm, int flags )
 
   /* check if any "blocking" tuner is running */
   LIST_FOREACH(th, &tvh_hardware, th_link) {
-    if (!idnode_is_instance(&th->th_id, &linuxdvb_frontend_class)) continue;
+    if (!idnode_is_instance(&th->th_id, &linuxdvb_adapter_class)) continue;
     la = (linuxdvb_adapter_t*)th;
     LIST_FOREACH(lfe2, &la->la_frontends, lfe_link) {
       if (lfe2 == lfe) continue;
