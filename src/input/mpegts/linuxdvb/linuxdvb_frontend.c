@@ -422,7 +422,7 @@ linuxdvb_frontend_stop_mux
   /* Ensure it won't happen immediately */
   gtimer_arm(&lfe->lfe_monitor_timer, linuxdvb_frontend_monitor, lfe, 2);
 
-  if (lfe->lfe_satconf)
+  if (lfe->lfe_satconf && lfe->lfe_refcount == 1)
     linuxdvb_satconf_post_stop_mux(lfe->lfe_satconf);
 
   if (lfe->lfe_master) {

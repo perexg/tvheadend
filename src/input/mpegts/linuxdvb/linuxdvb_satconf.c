@@ -665,6 +665,7 @@ void
 linuxdvb_satconf_post_stop_mux
   ( linuxdvb_satconf_t *ls )
 {
+  ls->ls_mmi = NULL;
   gtimer_disarm(&ls->ls_diseqc_timer);
   if (ls->ls_frontend && ls->ls_lnb_poweroff) {
     linuxdvb_diseqc_set_volt(ls, -1);
