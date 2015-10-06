@@ -377,6 +377,7 @@ linuxdvb_frontend_is_enabled ( mpegts_input_t *mi, mpegts_mux_t *mm, int flags )
       if (lfe->lfe_master && !strcmp(lfe->lfe_master, idnode_uuid_as_sstr(&lfe2->ti_id))) {
         if (lfe2->lfe_refcount == 0 || lfe2->lfe_satconf == NULL)
           return 0; /* master must be running */
+        tvhtrace("linuxdvb", "match2: satconf %p/%p", lfe2, lfe2->lfe_satconf);
         return linuxdvb_satconf_match_mux(lfe2->lfe_satconf, mm);
       }
       if (lfe2->lfe_master &&
@@ -384,6 +385,7 @@ linuxdvb_frontend_is_enabled ( mpegts_input_t *mi, mpegts_mux_t *mm, int flags )
           lfe2->lfe_refcount > 0)
         if (lfe->lfe_satconf == NULL)
           return 0;
+        tvhtrace("linuxdvb", "match2: satconf %p/%p", lfe, lfe->lfe_satconf);
         return linuxdvb_satconf_match_mux(lfe->lfe_satconf, mm);
     }
   }
