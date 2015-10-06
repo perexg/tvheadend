@@ -921,7 +921,7 @@ linuxdvb_satconf_match_mux
   tvherror("diseqc", "match mux entered mmi = %p, ls = %p, mm = %p", mmi, ls, mm);
 
   if (mmi == NULL || mmi->mmi_mux == NULL)
-    return 0;
+    return 1;
 
   linuxdvb_satconf_ele_t *lse1 = linuxdvb_satconf_find_ele(ls, mm);
   linuxdvb_satconf_ele_t *lse2 = linuxdvb_satconf_find_ele(ls, mmi->mmi_mux);
