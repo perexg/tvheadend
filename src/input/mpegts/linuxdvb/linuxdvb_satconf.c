@@ -918,11 +918,16 @@ linuxdvb_satconf_match_mux
 {
   mpegts_mux_instance_t *mmi = ls->ls_mmi;
 
+  tvherror("diseqc", "match mux entered mmi = %p, ls = %p, mm = %p", mmi, ls, mm);
+
   if (mmi == NULL || mmi->mmi_mux == NULL)
     return 0;
 
   linuxdvb_satconf_ele_t *lse1 = linuxdvb_satconf_find_ele(ls, mm);
   linuxdvb_satconf_ele_t *lse2 = linuxdvb_satconf_find_ele(ls, mmi->mmi_mux);
+
+  tvherror("diseqc", "match mux lse1 = %p, lse2 = %p", lse1, lse2);
+
   dvb_mux_t *lm1 = (dvb_mux_t*)mmi->mmi_mux;
   dvb_mux_t *lm2 = (dvb_mux_t*)mm;
 
