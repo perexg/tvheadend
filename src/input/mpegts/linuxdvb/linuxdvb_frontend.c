@@ -1244,6 +1244,7 @@ linuxdvb_frontend_clear
 
   /* Open FE */
   lfe->mi_display_name((mpegts_input_t*)lfe, buf1, sizeof(buf1));
+  tvhtrace("linuxdvb", "%s - frontend clear\n", buf1);
 
   if (lfe->lfe_fe_fd <= 0) {
     lfe->lfe_fe_fd = tvh_open(lfe->lfe_fe_path, O_RDWR | O_NONBLOCK, 0);

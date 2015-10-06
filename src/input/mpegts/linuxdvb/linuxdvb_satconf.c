@@ -913,22 +913,34 @@ linuxdvb_satconf_match_mux
 {
   mpegts_mux_instance_t *mmi = ls->ls_mmi;
 
-  if (mmi == NULL)
+  if (mmi == NULL || mmi->mmi_mux == NULL)
     return 0;
 
   linuxdvb_satconf_ele_t *lse1 = linuxdvb_satconf_find_ele(ls, mm);
   linuxdvb_satconf_ele_t *lse2 = linuxdvb_satconf_find_ele(ls, mmi->mmi_mux);
-
-  if (lse1 != lse2)
-    return 0;
-
   dvb_mux_t *lm1 = (dvb_mux_t*)mmi->mmi_mux;
   dvb_mux_t *lm2 = (dvb_mux_t*)mm;
 
-  if (!lse1->lse_lnb->lnb_match(lse1->lse_lnb, lm1, lm2))
+#if ENABLE_TRACE
+  char buf1[256], buf2[256];
+  dvb_mux_conf_str(&lm1->lm_tuning, buf1, sizeof(buf1));
+  dvb_mux_conf_str(&lm2->lm_tuning, buf2, sizeof(buf2));
+  tvhtrace("diseqc", "match mux 1 - %s", buf1);
+  tvhtrace("diseqc", "match mux 2 - %s", buf2);
+#endif
+
+  if (lse1 != lse2) {
+    tvhtrace("diseqc", "match position failed");
     return 0;
-  if (lse1->lse_en50494 && !lse1->lse_en50494->ld_match(lse1->lse_en50494, lm1, lm2))
+  }
+  if (!lse1->lse_lnb->lnb_match(lse1->lse_lnb, lm1, lm2)) {
+    tvhtrace("diseqc", "match LNB failed");
     return 0;
+  }
+  if (lse1->lse_en50494 && !lse1->lse_en50494->ld_match(lse1->lse_en50494, lm1, lm2)) {
+    tvhtrace("diseqc", "match en50494 failed");
+    return 0;
+  }
   return 1;
 }
 
