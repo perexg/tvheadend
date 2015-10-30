@@ -1239,7 +1239,7 @@ transcoder_stream_video(transcoder_t *t, transcoder_stream_t *ts, th_pkt_t *pkt)
 
         av_dict_set(&opts,       "x265_opts", "vbv-bufsize=",  0);
         av_dict_set_int__(&opts, "x265_opts", bufsize,         AV_DICT_APPEND);
-        av_dict_set(&opts,       "x265_opts", ":vbv-maxrate=",AV_DICT_APPEND);
+        av_dict_set(&opts,       "x265_opts", ":vbv-maxrate=", AV_DICT_APPEND);
         av_dict_set_int__(&opts, "x265_opts", maxrate,         AV_DICT_APPEND);
         av_dict_set(&opts,       "x265_opts", ":strict-cbr=1", AV_DICT_APPEND);
       }

@@ -1,0 +1,29 @@
+diff -urN libav_static/libva-1.6.1.orig/va/sysdeps.h libav_static/libva-1.6.1/va/sysdeps.h
+--- libav_static/libva-1.6.1.orig/va/sysdeps.h	2015-09-06 09:59:43.000000000 +0200
++++ libav_static/libva-1.6.1/va/sysdeps.h	2015-10-15 17:24:19.183564448 +0200
+@@ -35,6 +35,7 @@
+ #include <string.h>
+ #include <stdint.h>
+ #include <assert.h>
++#include <syslog.h>
+
+ #ifdef ANDROID
+ # define Bool  int
+@@ -57,14 +58,14 @@
+ #endif
+
+ #ifndef va_log_error
+-#define va_log_error(buffer) do {                       \
+-        fprintf(stderr, "libva error: %s", buffer);     \
++#define va_log_error(buffer) do {                              \
++        syslog(LOG_USER | LOG_ERR, "libva error: %s", buffer); \
+     } while (0)
+ #endif
+
+ #ifndef va_log_info
+-#define va_log_info(buffer) do {                        \
+-        fprintf(stderr, "libva info: %s", buffer);      \
++#define va_log_info(buffer) do {                               \
++        syslog(LOG_USER | LOG_INFO, "libva info: %s", buffer); \
+     } while (0)
+ #endif

@@ -59,24 +59,38 @@ CFLAGS  += -Wno-unused-value -Wno-tautological-constant-out-of-range-compare
 CFLAGS  += -Wno-parentheses-equality -Wno-incompatible-pointer-types
 endif
 
+
+# CONFIG_FFMPEG_STATIC #########################################################
 ifeq ($(CONFIG_LIBFFMPEG_STATIC),yes)
-CFLAGS  += -I${ROOTDIR}/libav_static/build/ffmpeg/include
+
 LDFLAGS_FFDIR = ${ROOTDIR}/libav_static/build/ffmpeg/lib
+CFLAGS  += -I${ROOTDIR}/libav_static/build/ffmpeg/include
+LDFLAGS += -Wl,-rpath,${LDFLAGS_FFDIR} -L${LDFLAGS_FFDIR}
+
 LDFLAGS += ${LDFLAGS_FFDIR}/libavresample.a
 LDFLAGS += ${LDFLAGS_FFDIR}/libswresample.a
 LDFLAGS += ${LDFLAGS_FFDIR}/libswscale.a
-LDFLAGS += ${LDFLAGS_FFDIR}/libavutil.a
 LDFLAGS += ${LDFLAGS_FFDIR}/libavformat.a
 LDFLAGS += ${LDFLAGS_FFDIR}/libavcodec.a
 LDFLAGS += ${LDFLAGS_FFDIR}/libavutil.a
+
+# libogg & libvorbis
+LDFLAGS += ${LDFLAGS_FFDIR}/libvorbisfile.a
 LDFLAGS += ${LDFLAGS_FFDIR}/libvorbisenc.a
 LDFLAGS += ${LDFLAGS_FFDIR}/libvorbis.a
 LDFLAGS += ${LDFLAGS_FFDIR}/libogg.a
+
+# libvpx (VP8)
+LDFLAGS += ${LDFLAGS_FFDIR}/libvpx.a
+
+# libx264
 ifeq ($(CONFIG_LIBX264_STATIC),yes)
 LDFLAGS += ${LDFLAGS_FFDIR}/libx264.a -ldl
 else
 LDFLAGS += -lx264 -ldl
 endif
+
+# libx265
 ifeq ($(CONFIG_LIBX265),yes)
 ifeq ($(CONFIG_LIBX265_STATIC),yes)
 LDFLAGS += ${LDFLAGS_FFDIR}/libx265.a -lstdc++
@@ -84,24 +98,9 @@ else
 LDFLAGS += -lx265
 endif
 endif
-LDFLAGS += ${LDFLAGS_FFDIR}/libvpx.a
-CONFIG_LIBMFX_VA_LIBS =
-ifeq ($(CONFIG_LIBMFX),yes)
-CONFIG_LIBMFX_VA_LIBS += -lva
-ifeq ($(CONFIG_VA_DRM),yes)
-CONFIG_LIBMFX_VA_LIBS += -lva-drm
-endif
-ifeq ($(CONFIG_VA_X11),yes)
-CONFIG_LIBMFX_VA_LIBS += -lva-x11
-endif
-ifeq ($(CONFIG_LIBMFX_STATIC),yes)
-LDFLAGS += ${LDFLAGS_FFDIR}/libmfx.a -lstdc++
-else
-LDFLAGS += -lmfx
-endif
-LDFLAGS += ${CONFIG_LIBMFX_VA_LIBS}
-endif
-endif
+
+endif # CONFIG_FFMPEG_STATIC ###################################################
+
 
 ifeq ($(CONFIG_HDHOMERUN_STATIC),yes)
 CFLAGS  += -I${ROOTDIR}/libhdhomerun_static
@@ -409,8 +408,12 @@ I18N-C += $(SRCS-BONJOUR)
 # libav
 SRCS-LIBAV = \
 	src/libav.c \
-	src/muxer/muxer_libav.c \
-	src/plumbing/transcoding.c
+	src/muxer/muxer_libav.c
+ifeq ($(CONFIG_EXPERIMENTAL),yes)
+SRCS-LIBAV += $(wildcard src/transcoding/*.c)
+else
+SRCS-LIBAV += src/plumbing/transcoding.c
+endif
 SRCS-$(CONFIG_LIBAV) += $(SRCS-LIBAV)
 I18N-C += $(SRCS-LIBAV)
 
@@ -426,7 +429,7 @@ SRCS-CWC = \
 	src/descrambler/emm_reass.c
 SRCS-${CONFIG_CWC} += $(SRCS-CWC)
 I18N-C += $(SRCS-CWC)
-	
+
 # CAPMT
 SRCS-CAPMT = \
 	src/descrambler/capmt.c

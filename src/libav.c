@@ -124,7 +124,7 @@ streaming_component_type2codec_id(streaming_component_type_t type)
 streaming_component_type_t
 codec_id2streaming_component_type(enum AVCodecID id)
 {
-  streaming_component_type_t type = AV_CODEC_ID_NONE;
+  streaming_component_type_t type = SCT_UNKNOWN;
 
   switch(id) {
   case AV_CODEC_ID_H264:
@@ -179,8 +179,8 @@ codec_id2streaming_component_type(enum AVCodecID id)
 
 
 /**
- * 
- */ 
+ *
+ */
 int
 libav_is_encoder(AVCodec *codec)
 {
@@ -192,8 +192,8 @@ libav_is_encoder(AVCodec *codec)
 }
 
 /**
- * 
- */ 
+ *
+ */
 void
 libav_set_loglevel(void)
 {
