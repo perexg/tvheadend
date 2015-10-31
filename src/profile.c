@@ -25,7 +25,11 @@
 #include "plumbing/globalheaders.h"
 #if ENABLE_LIBAV
 #include "lang_codes.h"
+#if ENABLE_EXPERIMENTAL
+#include "transcoding/transcoding.h"
+#else
 #include "plumbing/transcoding.h"
+#endif
 #endif
 #if ENABLE_TIMESHIFT
 #include "timeshift.h"
@@ -1338,6 +1342,7 @@ static int profile_transcode_experimental_codecs = 1;
 typedef struct profile_transcode {
   profile_t;
   int      pro_mc;
+  int      pro_deinterlace;
   uint32_t pro_resolution;
   uint32_t pro_channels;
   uint32_t pro_vbitrate;
@@ -1508,6 +1513,13 @@ const idclass_t profile_transcode_class =
       .list     = profile_class_mc_list,
     },
     {
+      .type     = PT_BOOL,
+      .id       = "deinterlace",
+      .name     = N_("Deinterlace"),
+      .off      = offsetof(profile_transcode_t, pro_deinterlace),
+      .def.i    = 1,
+    },
+    {
       .type     = PT_U32,
       .id       = "resolution",
       .name     = N_("Resolution (height)"),
@@ -1610,6 +1622,9 @@ profile_transcode_can_share(profile_chain_t *prch,
     return 0;
   if (strcmp(pro1->pro_scodec ?: "", pro2->pro_scodec ?: ""))
     return 0;
+  // XXX: is it needed?
+  if (pro1->pro_deinterlace != pro2->pro_deinterlace)
+    return 0;
   if (profile_transcode_resolution(pro1) != profile_transcode_resolution(pro2))
     return 0;
   if (profile_transcode_vbitrate(pro1) != profile_transcode_vbitrate(pro2))
@@ -1637,14 +1652,15 @@ profile_transcode_work(profile_chain_t *prch,
   prch->prch_can_share = profile_transcode_can_share;
 
   memset(&props, 0, sizeof(props));
+  props.tp_deinterlace = pro->pro_deinterlace;
+  props.tp_resolution  = profile_transcode_resolution(pro);
+  props.tp_channels    = pro->pro_channels;
+  props.tp_vbitrate    = profile_transcode_vbitrate(pro);
+  props.tp_abitrate    = profile_transcode_abitrate(pro);
+  strncpy(props.tp_language, pro->pro_language ?: "", 3);
   strncpy(props.tp_vcodec, pro->pro_vcodec ?: "", sizeof(props.tp_vcodec)-1);
   strncpy(props.tp_acodec, pro->pro_acodec ?: "", sizeof(props.tp_acodec)-1);
   strncpy(props.tp_scodec, pro->pro_scodec ?: "", sizeof(props.tp_scodec)-1);
-  props.tp_resolution = profile_transcode_resolution(pro);
-  props.tp_channels   = pro->pro_channels;
-  props.tp_vbitrate   = profile_transcode_vbitrate(pro);
-  props.tp_abitrate   = profile_transcode_abitrate(pro);
-  strncpy(props.tp_language, pro->pro_language ?: "", 3);
 
   dst = prch->prch_gh = globalheaders_create(dst);
 

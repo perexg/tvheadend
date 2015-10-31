@@ -260,6 +260,26 @@ transcoder_stream(void *opaque, streaming_message_t *msg)
 }
 
 
+static void
+transcoder_destroy_props(TVHTranscoder *self)
+{
+    transcoder_props_t *props = &self->t_props;
+
+    if (props->tp_scodec) {
+        free(props->tp_scodec);
+    }
+    if (props->tp_acodec) {
+        free(props->tp_acodec);
+    }
+    if (props->tp_vcodec) {
+        free(props->tp_vcodec);
+    }
+    if (props->tp_language) {
+        free(props->tp_language);
+    }
+}
+
+
 /* public */
 
 streaming_target_t *
@@ -289,6 +309,7 @@ transcoder_destroy(streaming_target_t *st)
 
     if (self) {
         transcoder_stop(self);
+        transcoder_destroy_props(self);
         free(self);
         self = NULL;
     }

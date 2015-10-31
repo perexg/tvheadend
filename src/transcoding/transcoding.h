@@ -20,28 +20,24 @@
 #include "tvheadend.h"
 #include "htsmsg.h"
 
+
 typedef struct transcoder_prop {
-  char     tp_vcodec[32];
-  char     tp_acodec[32];
-  char     tp_scodec[32];
-
-  int8_t   tp_channels;
-  int32_t  tp_vbitrate;
-  int32_t  tp_abitrate;
-  char     tp_language[4];
-  int32_t  tp_resolution;
-
-  long     tp_nrprocessors;
+    int      tp_deinterlace;
+    uint32_t tp_resolution;
+    uint32_t tp_channels;
+    uint32_t tp_vbitrate;
+    uint32_t tp_abitrate;
+    char     tp_language[4];
+    char     tp_vcodec[32];
+    char     tp_acodec[32];
+    char     tp_scodec[32];
 } transcoder_props_t;
 
-extern uint32_t transcoding_enabled;
 
 streaming_target_t *transcoder_create (streaming_target_t *output);
-void                transcoder_destroy(streaming_target_t *tr);
+void transcoder_destroy(streaming_target_t *tr);
 
 htsmsg_t *transcoder_get_capabilities(int experimental);
-void transcoder_set_properties  (streaming_target_t *tr,
-				 transcoder_props_t *prop);
-
+void transcoder_set_properties (streaming_target_t *tr,  transcoder_props_t *prop);
 
 void transcoding_init(void);

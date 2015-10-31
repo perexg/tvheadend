@@ -77,18 +77,18 @@ transcoder_get_capabilities(int experimental)
 void
 transcoder_set_properties(streaming_target_t *st, transcoder_props_t *props)
 {
-  TVHTranscoder *t = (TVHTranscoder *)st;
-  transcoder_props_t *tp = &t->t_props;
+    TVHTranscoder *t = (TVHTranscoder *)st;
+    transcoder_props_t *tp = &t->t_props;
 
-  strncpy(tp->tp_vcodec, props->tp_vcodec, sizeof(tp->tp_vcodec)-1);
-  strncpy(tp->tp_acodec, props->tp_acodec, sizeof(tp->tp_acodec)-1);
-  strncpy(tp->tp_scodec, props->tp_scodec, sizeof(tp->tp_scodec)-1);
-  tp->tp_channels   = props->tp_channels;
-  tp->tp_vbitrate   = props->tp_vbitrate;
-  tp->tp_abitrate   = props->tp_abitrate;
-  tp->tp_resolution = props->tp_resolution;
-
-  memcpy(tp->tp_language, props->tp_language, 4);
+    tp->tp_deinterlace = props->tp_deinterlace;
+    tp->tp_resolution  = props->tp_resolution;
+    tp->tp_channels    = props->tp_channels;
+    tp->tp_vbitrate    = props->tp_vbitrate;
+    tp->tp_abitrate    = props->tp_abitrate;
+    memcpy(tp->tp_language, props->tp_language, 4);
+    strncpy(tp->tp_vcodec, props->tp_vcodec, sizeof(tp->tp_vcodec)-1);
+    strncpy(tp->tp_acodec, props->tp_acodec, sizeof(tp->tp_acodec)-1);
+    strncpy(tp->tp_scodec, props->tp_scodec, sizeof(tp->tp_scodec)-1);
 }
 
 
@@ -98,5 +98,5 @@ transcoder_set_properties(streaming_target_t *st, transcoder_props_t *props)
 void
 transcoding_init(void)
 {
-  handler_register_all();
+    handler_register_all();
 }

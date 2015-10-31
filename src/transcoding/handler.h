@@ -36,8 +36,8 @@ struct t_handler;
 
 typedef void (*setup_meth) (struct t_handler *, streaming_start_component_t *,
                             transcoder_props_t *, int);
-typedef int (*init_meth) (struct t_handler *);
 typedef th_pkt_t *(*handle_meth) (struct t_handler *, th_pkt_t *);
+typedef int (*init_meth) (struct t_handler *);
 typedef void (*finish_meth) (struct t_handler *);
 
 /* handler class */
@@ -48,8 +48,8 @@ typedef struct t_handler_cls {
 
     setup_meth setup;
     handle_meth handle;
-    init_meth init;
-    finish_meth finish;
+    init_meth init; // optional
+    finish_meth finish; // optional
 
     SLIST_ENTRY(t_handler_cls) link;
 } TVHHandlerClass;

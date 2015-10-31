@@ -220,6 +220,7 @@ handler_create(streaming_start_component_t *component,
     return self;
 }
 
+
 void
 handler_destroy(TVHHandler *self)
 {

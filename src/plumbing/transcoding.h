@@ -30,6 +30,7 @@ typedef struct transcoder_prop {
   int32_t  tp_abitrate;
   char     tp_language[4];
   int32_t  tp_resolution;
+  int      tp_deinterlace;
 
   long     tp_nrprocessors;
 } transcoder_props_t;

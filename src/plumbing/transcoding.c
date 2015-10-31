@@ -1924,6 +1924,7 @@ transcoder_set_properties(streaming_target_t *st,
   tp->tp_vbitrate   = props->tp_vbitrate;
   tp->tp_abitrate   = props->tp_abitrate;
   tp->tp_resolution = props->tp_resolution;
+  tp->tp_deinterlace = props->tp_deinterlace;
 
   memcpy(tp->tp_language, props->tp_language, 4);
 }

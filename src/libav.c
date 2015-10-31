@@ -1,4 +1,8 @@
+#if ENABLE_EXPERIMENTAL
+#include "transcoding/transcoding.h"
+#else
 #include "plumbing/transcoding.h"
+#endif
 #include "libav.h"
 
 /**
