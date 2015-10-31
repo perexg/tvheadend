@@ -22,15 +22,15 @@
 
 
 typedef struct transcoder_prop {
-    int      tp_deinterlace;
-    uint32_t tp_resolution;
-    uint32_t tp_channels;
-    uint32_t tp_vbitrate;
-    uint32_t tp_abitrate;
-    char     tp_language[4];
-    char     tp_vcodec[32];
-    char     tp_acodec[32];
-    char     tp_scodec[32];
+    int tp_deinterlace;
+    int tp_resolution;
+    int tp_channels;
+    int tp_vbitrate;
+    int tp_abitrate;
+    char tp_language[4];
+    char tp_vcodec[32];
+    char tp_acodec[32];
+    char tp_scodec[32];
 } transcoder_props_t;
 
 

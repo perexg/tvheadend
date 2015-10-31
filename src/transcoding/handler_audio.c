@@ -24,8 +24,8 @@
 
 typedef struct {
     TVHHandler handler;
-    int8_t channels;
-    int32_t bitrate;
+    int channels;
+    int bitrate;
 } TVHAudioHandler;
 
 
@@ -37,8 +37,14 @@ Audio_setup(TVHAudioHandler *self, streaming_start_component_t *component,
     if (!passthrough) {
         self->channels = props->tp_channels;
         self->bitrate = props->tp_abitrate * 1000;
+/*
+  as->resample_context = NULL;
+  as->fifo = NULL;
+  as->resample = 0;
+*/
     }
     ((TVHHandler *)self)->passthrough = passthrough;
+
 }
 
 

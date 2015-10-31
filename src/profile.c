@@ -1586,20 +1586,29 @@ const idclass_t profile_transcode_class =
 static int
 profile_transcode_resolution(profile_transcode_t *pro)
 {
+  // at the time of this writing, ssc_width is an int16_t and the biggest
+  // cinematic ratio is 2.39:1 so I rounded it up to 2.5 (to be safe)
+  // and then rounded down the result to an even number
+  static const int max_resolution = ((int)(INT16_MAX / 2.5)) & ~1;
   return pro->pro_resolution == 0 ? 0 :
-         (pro->pro_resolution >= 240 ? pro->pro_resolution : 240);
+        MINMAX(pro->pro_resolution, 240, max_resolution);
 }
 
 static int
 profile_transcode_vbitrate(profile_transcode_t *pro)
 {
-  return pro->pro_vbitrate;
+  // see video transcoding
+  // buffer_size = vbitrate * 1000 * 1.25 * 3
+  static const int max_vbitrate = (int)(INT_MAX / 3750);
+  return MIN(pro->pro_vbitrate, max_vbitrate);
 }
 
 static int
 profile_transcode_abitrate(profile_transcode_t *pro)
 {
-  return pro->pro_abitrate;
+  // see audio transcoding
+  static const int max_abitrate = (int)(INT_MAX / 1000);
+  return MIN(pro->pro_abitrate, max_abitrate);
 }
 
 static int
