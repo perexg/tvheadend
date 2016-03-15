@@ -338,13 +338,17 @@ http_stream_run(http_connection_t *hc, profile_chain_t *prch,
     pthread_mutex_unlock(&sq->sq_mutex);
   }
 
+  FILE *fp = fopen("/tmp/tvh.txt", "w+");
+  fprintf(fp, "%"PRId64": start\n\n", getmonoclock());
   while(!hc->hc_shutdown && run && tvheadend_is_running()) {
     pthread_mutex_lock(&sq->sq_mutex);
     sm = TAILQ_FIRST(&sq->sq_queue);
     if(sm == NULL) {
       mono = mclk() + sec2mono(1);
       do {
+        fprintf(fp, "%"PRId64": wait enter\n", getmonoclock());
         r = tvh_cond_timedwait(&sq->sq_cond, &sq->sq_mutex, mono);
+        fprintf(fp, "%"PRId64": wait leave, r = %d\n", getmonoclock(), r);
         if (r == ETIMEDOUT) {
           /* Check socket status */
           if (tcp_socket_dead(hc->hc_fd)) {
@@ -365,6 +369,7 @@ http_stream_run(http_connection_t *hc, profile_chain_t *prch,
     streaming_queue_remove(sq, sm);
     pthread_mutex_unlock(&sq->sq_mutex);
 
+    fprintf(fp, "%"PRId64": got message %d\n", getmonoclock(), sm->sm_type);
     switch(sm->sm_type) {
     case SMT_MPEGTS:
     case SMT_PACKET:
@@ -378,6 +383,7 @@ http_stream_run(http_connection_t *hc, profile_chain_t *prch,
         subscription_add_bytes_out(s, len = pktbuf_len(pb));
         if (len > 0)
           lastpkt = mclk();
+        fprintf(fp, "%"PRId64": pktbuf len %d\n", getmonoclock(), len);
         muxer_write_pkt(mux, sm->sm_type, sm->sm_data);
         sm->sm_data = NULL;
       }
@@ -457,6 +463,7 @@ http_stream_run(http_connection_t *hc, profile_chain_t *prch,
       break;
     }
 
+    fprintf(fp, "%"PRId64": processing end\n", getmonoclock());
     streaming_msg_free(sm);
 
     if(mux->m_errors) {
@@ -465,6 +472,7 @@ http_stream_run(http_connection_t *hc, profile_chain_t *prch,
       run = 0;
     }
   }
+  fclose(fp);
 
   if(started)
     muxer_close(mux);
